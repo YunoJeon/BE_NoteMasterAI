@@ -1,0 +1,35 @@
+services:
+  app:
+    build: .
+    container_name: notemasterai_app
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - notemasterai_network
+
+  redis:
+    image: redis:latest
+    container_name: notemasterai_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass $SPRING_REDIS_PASSWORD
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "$SPRING_REDIS_PASSWORD", "ping"]
+      interval: 10s
+      retries: 3
+      timeout: 5s
+    env_file:
+      - .env
+    networks:
+      - notemasterai_network
+
+networks:
+  notemasterai_network:
+    driver: bridge
