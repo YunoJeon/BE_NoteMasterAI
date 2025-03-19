@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.be_notemasterai.exception.CustomException;
+import com.be_notemasterai.member.dto.AccessTokenResponse;
 import com.be_notemasterai.member.entity.Member;
 import com.be_notemasterai.security.jwt.JwtTokenProvider;
 import com.be_notemasterai.security.jwt.JwtTokenService;
@@ -68,12 +69,10 @@ class AuthServiceTest {
     when(jwtTokenProvider.validateToken(refreshToken)).thenReturn(true);
     when(jwtTokenService.validateRefreshToken(providerUuid, refreshToken)).thenReturn(true);
     when(jwtTokenProvider.createAccessToken(providerUuid)).thenReturn("newAccessToken");
-    when(jwtTokenService.createAccessCookie("newAccessToken")).thenReturn(
-        ResponseCookie.from("accessToken", "newAccessToken").build());
     // when
-    authService.refreshAccessToken(refreshToken, response);
+    AccessTokenResponse accessTokenResponse = authService.refreshAccessToken(refreshToken);
     // then
-    verify(response).addHeader(eq("Set-Cookie"), anyString());
+    assertEquals("newAccessToken", accessTokenResponse.accessToken());
   }
 
   @Test
@@ -83,7 +82,7 @@ class AuthServiceTest {
     when(jwtTokenProvider.validateToken(invalidRefreshToken)).thenReturn(false);
     // when
     CustomException e = assertThrows(CustomException.class,
-        () -> authService.refreshAccessToken(invalidRefreshToken, response));
+        () -> authService.refreshAccessToken(invalidRefreshToken));
     // then
     assertEquals(e.getMessage(), "유효하지 않은 토큰입니다.");
     assertEquals(e.getErrorCode(), INVALID_TOKEN);
@@ -94,12 +93,11 @@ class AuthServiceTest {
   void signOut_success() {
     // given
     when(jwtTokenProvider.getProviderUuidFromToken(refreshToken)).thenReturn(providerUuid);
-    when(jwtTokenService.createExpiredCookie("accessToken")).thenReturn(ResponseCookie.from("accessToken", "").build());
     when(jwtTokenService.createExpiredCookie("refreshToken")).thenReturn(ResponseCookie.from("refreshToken", "").build());
     // when
     authService.signOut(refreshToken, response);
     // then
     verify(jwtTokenService).deleteRefreshToken(providerUuid);
-    verify(response, times(2)).addHeader(eq("Set-Cookie"), anyString());
+    verify(response, times(1)).addHeader(eq("Set-Cookie"), anyString());
   }
 }

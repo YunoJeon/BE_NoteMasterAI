@@ -14,7 +14,6 @@ public class JwtTokenService {
 
   private final StringRedisTemplate redisTemplate;
 
-  private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 5;
   private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7;
 
   public void setRefreshTokenFromRedis(String providerUuid, String refreshToken) {
@@ -22,22 +21,11 @@ public class JwtTokenService {
     redisTemplate.opsForValue().set(providerUuid, refreshToken, REFRESH_TOKEN_EXPIRATION, SECONDS);
   }
 
-  public void setTokens(HttpServletResponse response, String providerUuid, String accessToken, String refreshToken) {
+  public void setRefreshToken(HttpServletResponse response, String providerUuid, String refreshToken) {
 
     setRefreshTokenFromRedis(providerUuid, refreshToken);
 
-    response.addHeader("Set-Cookie", createAccessCookie(accessToken).toString());
     response.addHeader("Set-Cookie", createRefreshCookie(refreshToken).toString());
-  }
-
-  public ResponseCookie createAccessCookie(String accessToken) {
-
-    return ResponseCookie.from("accessToken", accessToken)
-        .httpOnly(true)
-        .secure(true)
-        .path("/")
-        .maxAge(ACCESS_TOKEN_EXPIRATION)
-        .build();
   }
 
   private ResponseCookie createRefreshCookie(String refreshToken) {
