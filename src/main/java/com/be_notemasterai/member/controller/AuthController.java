@@ -1,5 +1,6 @@
 package com.be_notemasterai.member.controller;
 
+import com.be_notemasterai.member.dto.AccessTokenResponse;
 import com.be_notemasterai.member.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +18,13 @@ public class AuthController {
 
   private final AuthService authService;
 
-  @PostMapping("/refresh")
-  public ResponseEntity<Void> refreshAccessToken(
-      @CookieValue(value = "refreshToken", required = false) String refreshToken,
-      HttpServletResponse response) {
+  @PostMapping("/token")
+  public ResponseEntity<AccessTokenResponse> refreshAccessToken(
+      @CookieValue(value = "refreshToken", required = false) String refreshToken) {
 
-    authService.refreshAccessToken(refreshToken, response);
+    AccessTokenResponse accessToken = authService.refreshAccessToken(refreshToken);
 
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(accessToken);
   }
 
   @DeleteMapping("sign-out")

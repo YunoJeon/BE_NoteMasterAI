@@ -4,6 +4,7 @@ import static com.be_notemasterai.exception.ErrorCode.INVALID_REFRESH_TOKEN;
 import static com.be_notemasterai.exception.ErrorCode.INVALID_TOKEN;
 
 import com.be_notemasterai.exception.CustomException;
+import com.be_notemasterai.member.dto.AccessTokenResponse;
 import com.be_notemasterai.security.jwt.JwtTokenProvider;
 import com.be_notemasterai.security.jwt.JwtTokenService;
 import com.be_notemasterai.security.oauth2.CustomOAuth2UserService;
@@ -23,7 +24,7 @@ public class AuthService {
 
   private final CustomOAuth2UserService customOAuth2UserService;
 
-  public void refreshAccessToken(String refreshToken, HttpServletResponse response) {
+  public AccessTokenResponse refreshAccessToken(String refreshToken) {
 
     if (refreshToken == null || refreshToken.isEmpty()) {
       throw new CustomException(INVALID_REFRESH_TOKEN);
@@ -41,7 +42,7 @@ public class AuthService {
 
     String newAccessToken = jwtTokenProvider.createAccessToken(providerUuid);
 
-    response.addHeader("Set-Cookie", jwtTokenService.createAccessCookie(newAccessToken).toString());
+    return new AccessTokenResponse(newAccessToken);
   }
 
   public void signOut(String refreshToken, HttpServletResponse response) {
@@ -52,7 +53,6 @@ public class AuthService {
       jwtTokenService.deleteRefreshToken(providerUuid);
     }
 
-    response.addHeader("Set-Cookie", jwtTokenService.createExpiredCookie("accessToken").toString());
     response.addHeader("Set-Cookie", jwtTokenService.createExpiredCookie("refreshToken").toString());
   }
 }

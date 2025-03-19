@@ -1,11 +1,16 @@
 package com.be_notemasterai.subscribe.entity;
 
+import static com.be_notemasterai.subscribe.type.SubscriptionStatus.ACTIVE;
+import static com.be_notemasterai.subscribe.type.SubscriptionStatus.CANCELLED;
+import static com.be_notemasterai.subscribe.type.SubscriptionStatus.ENDED;
+import static com.be_notemasterai.subscribe.type.SubscriptionType.*;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.be_notemasterai.member.entity.Member;
+import com.be_notemasterai.payment.entity.Payment;
 import com.be_notemasterai.subscribe.type.SubscriptionStatus;
 import com.be_notemasterai.subscribe.type.SubscriptionType;
 import jakarta.persistence.Column;
@@ -59,4 +64,27 @@ public class Subscribe {
 
   @Column(name = "ended_at")
   private LocalDateTime endedAt;
+
+  public static Subscribe of(Member member, Payment payment, SubscriptionType subscriptionType) {
+
+    LocalDateTime now = LocalDateTime.now();
+
+    return Subscribe.builder()
+        .subscriber(member)
+        .paymentId(payment.getId())
+        .subscriptionType(subscriptionType)
+        .subscriptionStatus(ACTIVE)
+        .startedAt(now)
+        .endedAt(subscriptionType == MONTH ? now.plusMonths(1) : now.plusYears(1))
+        .build();
+  }
+
+  public void cancel() {
+    this.subscriptionStatus = CANCELLED;
+    this.endedAt = LocalDateTime.now();
+  }
+
+  public void expire() {
+    this.subscriptionStatus = ENDED;
+  }
 }

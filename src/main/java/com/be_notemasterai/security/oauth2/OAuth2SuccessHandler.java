@@ -29,11 +29,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
     String providerUuid = principalDetails.getUsername();
 
-    String accessToken = jwtTokenProvider.createAccessToken(providerUuid);
     String refreshToken = jwtTokenProvider.createRefreshToken(providerUuid);
 
-    jwtTokenService.setTokens(response, providerUuid, accessToken, refreshToken);
-
+    jwtTokenService.setRefreshToken(response, providerUuid, refreshToken);
 
     String redirectUri = (principalDetails.member().getNickname() == null)
         ? NICKNAME_SETUP_URI
