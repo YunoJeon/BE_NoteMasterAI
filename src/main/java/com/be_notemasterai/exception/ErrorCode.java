@@ -26,10 +26,12 @@ public enum ErrorCode {
   // 403 FORBIDDEN
   NOT_SUBSCRIBER(FORBIDDEN, "구독자만 접근 가능합니다."),
   PAYMENT_OWNER_MISMATCH(FORBIDDEN, "결제정보가 일치하지 않습니다."),
+  NOTE_OWNER_MISMATCH(FORBIDDEN, "노트 작성자만 접근 가능합니다."),
   // 404 NOT FOUND
   NOT_FOUND_MEMBER(NOT_FOUND, "회원 정보가 없습니다."),
   NOT_FOUND_PAYMENT(NOT_FOUND, "결제 정보가 없습니다."),
   NOT_FOUND_SUBSCRIPTION(NOT_FOUND, "구독 내역을 확인할 수 없습니다."),
+  NOT_FOUND_NOTE(NOT_FOUND, "노트를 찾을 수 없습니다."),
   // 408 REQUEST TIMEOUT
 
   // 409 CONFLICT

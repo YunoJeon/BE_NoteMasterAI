@@ -5,6 +5,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.be_notemasterai.member.entity.Member;
+import com.be_notemasterai.note.dto.NoteUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -51,9 +52,6 @@ public class Note {
   @Column(name = "created_at")
   private LocalDateTime createdAt;
 
-  @Column(name = "deleted_at")
-  private LocalDateTime deletedAt;
-
   public static Note of(Member owner, String title, String originalText, String summary) {
 
     return Note.builder()
@@ -62,5 +60,11 @@ public class Note {
         .originalText(originalText)
         .summary(summary)
         .build();
+  }
+
+  public void updateNote(NoteUpdateRequest noteUpdateRequest) {
+
+    title = noteUpdateRequest.title();
+    summary = noteUpdateRequest.summary();
   }
 }
