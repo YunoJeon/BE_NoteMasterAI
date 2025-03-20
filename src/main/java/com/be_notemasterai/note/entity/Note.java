@@ -4,6 +4,7 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.be_notemasterai.group.entity.Group;
 import com.be_notemasterai.member.entity.Member;
 import com.be_notemasterai.note.dto.NoteUpdateRequest;
 import jakarta.persistence.Column;
@@ -19,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -39,6 +41,11 @@ public class Note {
   @ManyToOne(fetch = LAZY)
   private Member owner;
 
+  @Setter
+  @JoinColumn(name = "group_id")
+  @ManyToOne(fetch = LAZY)
+  private Group group;
+
   @Column(nullable = false)
   private String title;
 
@@ -56,6 +63,7 @@ public class Note {
 
     return Note.builder()
         .owner(owner)
+        .group(null)
         .title(title)
         .originalText(originalText)
         .summary(summary)

@@ -61,7 +61,7 @@ public class NoteService {
     noteRepository.delete(note);
   }
 
-  private Note findNoteAndOwner(Member owner, Long noteId) {
+  public Note findNoteAndOwner(Member owner, Long noteId) {
 
     Note note = noteRepository.findById(noteId)
         .orElseThrow(() -> new CustomException(NOT_FOUND_NOTE));
