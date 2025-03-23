@@ -67,8 +67,10 @@ public class Payment {
   @Column(name = "merchant_uid", nullable = false)
   private String merchantUid;
 
+  @Column(name = "approved_at")
   private LocalDateTime approvedAt;
 
+  @Column(name = "refunded_at")
   private LocalDateTime refundedAt;
 
   @CreatedDate
