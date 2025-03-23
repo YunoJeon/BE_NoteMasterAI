@@ -10,14 +10,19 @@ import static com.be_notemasterai.exception.ErrorCode.STATUS_NOT_PAID;
 import static com.be_notemasterai.payment.type.PaymentStatus.REFUNDED;
 import static com.be_notemasterai.subscribe.type.SubscriptionType.MONTH;
 import static com.be_notemasterai.subscribe.type.SubscriptionType.YEAR;
+import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_UP;
 
 import com.be_notemasterai.exception.CustomException;
 import com.be_notemasterai.member.entity.Member;
+import com.be_notemasterai.payment.dto.PaymentLogResponse;
 import com.be_notemasterai.payment.dto.PaymentRequest;
 import com.be_notemasterai.payment.dto.PortoneResponse;
 import com.be_notemasterai.payment.dto.PrepareRequest;
 import com.be_notemasterai.payment.dto.RefundRequest;
 import com.be_notemasterai.payment.entity.Payment;
+import com.be_notemasterai.payment.entity.PaymentLog;
+import com.be_notemasterai.payment.repository.PaymentLogRepository;
 import com.be_notemasterai.payment.repository.PaymentRepository;
 import com.be_notemasterai.subscribe.service.SubscribeService;
 import com.be_notemasterai.subscribe.type.SubscriptionType;
@@ -27,11 +32,12 @@ import com.siot.IamportRestClient.request.PrepareData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Prepare;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +52,8 @@ public class PaymentService {
   private final PaymentRepository paymentRepository;
 
   private final SubscribeService subscribeService;
+
+  private final PaymentLogRepository paymentLogRepository;
 
   public void preparePayment(PrepareRequest prepareRequest) {
 
@@ -88,6 +96,8 @@ public class PaymentService {
       Payment payment = Payment.of(member, portoneResponse);
 
       paymentRepository.save(payment);
+
+      logPayment(member, payment);
 
       SubscriptionType subscriptionType = determineSubscriptionType(payment.getAmount());
 
@@ -148,7 +158,7 @@ public class PaymentService {
   @Transactional
   public void refundPayment(Member member, RefundRequest refundRequest) {
 
-    Payment payment = paymentRepository.findByMerchantUid(refundRequest.merchantUid())
+    Payment payment = paymentRepository.findById(refundRequest.paymentId())
         .orElseThrow(() -> new CustomException(NOT_FOUND_PAYMENT));
 
     if (!payment.getMember().getId().equals(member.getId())) {
@@ -169,6 +179,8 @@ public class PaymentService {
 
     payment.refund(refundAmount);
 
+    logPayment(member, payment);
+
     subscribeService.cancelSubscription(payment);
   }
 
@@ -179,12 +191,26 @@ public class PaymentService {
     }
 
     BigDecimal dailyRate = amount.compareTo(BigDecimal.valueOf(9900)) == 0 ?
-        BigDecimal.valueOf(9900).divide(BigDecimal.valueOf(30), 2, RoundingMode.HALF_UP) :
-        BigDecimal.valueOf(99000).divide(BigDecimal.valueOf(365), 2, RoundingMode.HALF_UP);
+        BigDecimal.valueOf(9900).divide(BigDecimal.valueOf(30), 2, HALF_UP) :
+        BigDecimal.valueOf(99000).divide(BigDecimal.valueOf(365), 2, HALF_UP);
 
     BigDecimal usedAmount = dailyRate.multiply(BigDecimal.valueOf(daysUsed));
     BigDecimal refundAmount = amount.subtract(usedAmount);
 
-    return refundAmount.max(BigDecimal.ZERO);
+    return refundAmount.max(ZERO);
+  }
+
+  private void logPayment(Member member, Payment payment) {
+
+    PaymentLog paymentLog = PaymentLog.of(member, payment);
+
+    paymentLogRepository.save(paymentLog);
+  }
+
+  public Page<PaymentLogResponse> getPaymentLog(Member member, Pageable pageable) {
+
+    Page<PaymentLog> logs = paymentLogRepository.findByMember(member, pageable);
+
+    return logs.map(PaymentLogResponse::fromEntity);
   }
 }
