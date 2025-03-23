@@ -5,7 +5,7 @@ import static com.be_notemasterai.exception.ErrorCode.ALREADY_SET_GROUP_NOTE;
 import static com.be_notemasterai.exception.ErrorCode.ALREADY_SET_GROUP_NULL;
 import static com.be_notemasterai.exception.ErrorCode.CANNOT_LEAVE_GROUP_AS_OWNER;
 import static com.be_notemasterai.exception.ErrorCode.CANNOT_REMOVE_GROUP_OWNER;
-import static com.be_notemasterai.exception.ErrorCode.EXIST_GROUP_MEMBER;
+import static com.be_notemasterai.exception.ErrorCode.EXISTS_GROUP_MEMBER;
 import static com.be_notemasterai.exception.ErrorCode.INVALID_GROUP_MEMBER;
 import static com.be_notemasterai.exception.ErrorCode.INVALID_GROUP_NOTE;
 import static com.be_notemasterai.exception.ErrorCode.NOT_FOUND_GROUP;
@@ -142,7 +142,7 @@ public class GroupService {
     long memberCount = groupMemberRepository.countByGroup(pair.getFirst());
 
     if (memberCount > 1) {
-      throw new CustomException(EXIST_GROUP_MEMBER);
+      throw new CustomException(EXISTS_GROUP_MEMBER);
     }
 
     List<Note> notes = noteRepository.findByGroup(pair.getFirst());
@@ -243,7 +243,7 @@ public class GroupService {
     return groupMembers.map(GroupMemberListResponse::fromEntity);
   }
 
-  private void removeGroupMemberAndNotes(GroupMember groupMember, Member member, Group group) {
+  public void removeGroupMemberAndNotes(GroupMember groupMember, Member member, Group group) {
 
     groupMemberRepository.delete(groupMember);
 

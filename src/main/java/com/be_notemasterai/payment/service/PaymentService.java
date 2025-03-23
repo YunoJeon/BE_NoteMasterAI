@@ -172,7 +172,7 @@ public class PaymentService {
     subscribeService.cancelSubscription(payment);
   }
 
-  private BigDecimal calculateRefundAmount(BigDecimal amount, long daysUsed) {
+  public BigDecimal calculateRefundAmount(BigDecimal amount, long daysUsed) {
 
     if (daysUsed < 1) {
       return amount;

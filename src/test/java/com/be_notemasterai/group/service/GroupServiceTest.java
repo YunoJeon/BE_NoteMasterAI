@@ -4,7 +4,7 @@ import static com.be_notemasterai.exception.ErrorCode.ALREADY_SET_GROUP_MEMBER;
 import static com.be_notemasterai.exception.ErrorCode.ALREADY_SET_GROUP_NOTE;
 import static com.be_notemasterai.exception.ErrorCode.ALREADY_SET_GROUP_NULL;
 import static com.be_notemasterai.exception.ErrorCode.CANNOT_LEAVE_GROUP_AS_OWNER;
-import static com.be_notemasterai.exception.ErrorCode.EXIST_GROUP_MEMBER;
+import static com.be_notemasterai.exception.ErrorCode.EXISTS_GROUP_MEMBER;
 import static com.be_notemasterai.exception.ErrorCode.INVALID_GROUP_NOTE;
 import static com.be_notemasterai.exception.ErrorCode.NOT_FOUND_GROUP;
 import static com.be_notemasterai.exception.ErrorCode.NOT_GROUP_OWNER;
@@ -290,7 +290,7 @@ class GroupServiceTest {
     CustomException e = assertThrows(CustomException.class,
         () -> groupService.deleteGroup(owner, group.getId()));
     // then
-    assertEquals(e.getErrorCode(), EXIST_GROUP_MEMBER);
+    assertEquals(e.getErrorCode(), EXISTS_GROUP_MEMBER);
   }
 
   @Test

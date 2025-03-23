@@ -3,6 +3,7 @@ package com.be_notemasterai.group.repository;
 import com.be_notemasterai.group.entity.Group;
 import com.be_notemasterai.group.entity.GroupMember;
 import com.be_notemasterai.member.entity.Member;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,8 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
   boolean existsByMemberAndGroup(Member member, Group group);
 
   Page<GroupMember> findByGroup(Group group, Pageable pageable);
+
+  Long countByMember(Member member);
+
+  List<GroupMember> findByMember(Member member);
 }

@@ -1,5 +1,6 @@
 package com.be_notemasterai.security.resolver;
 
+import static com.be_notemasterai.exception.ErrorCode.ALREADY_WITHDRAWN_MEMBER;
 import static com.be_notemasterai.exception.ErrorCode.INVALID_TOKEN;
 import static com.be_notemasterai.exception.ErrorCode.NOT_FOUND_MEMBER;
 
@@ -44,7 +45,12 @@ public class CurrentMemberArgumentResolver implements HandlerMethodArgumentResol
 
     PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
-    return memberRepository.findByProviderUuid(principalDetails.getUsername())
+    Member member = memberRepository.findByProviderUuid(principalDetails.getUsername())
         .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+
+    if (member.getDeletedAt() != null) {
+      throw new CustomException(ALREADY_WITHDRAWN_MEMBER);
+    }
+    return member;
   }
 }

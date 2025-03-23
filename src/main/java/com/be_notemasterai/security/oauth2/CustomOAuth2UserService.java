@@ -1,5 +1,6 @@
 package com.be_notemasterai.security.oauth2;
 
+import static com.be_notemasterai.exception.ErrorCode.ALREADY_WITHDRAWN_MEMBER;
 import static com.be_notemasterai.exception.ErrorCode.NOT_FOUND_MEMBER;
 
 import com.be_notemasterai.exception.CustomException;
@@ -47,8 +48,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   }
 
   public Member getByProviderUuid(String providerUuid) {
-    return memberRepository.findByProviderUuid(providerUuid)
+    Member member = memberRepository.findByProviderUuid(providerUuid)
         .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+
+    if (member.getDeletedAt() != null) {
+      throw new CustomException(ALREADY_WITHDRAWN_MEMBER);
+    }
+
+    return member;
   }
 
   private String generateTag() {

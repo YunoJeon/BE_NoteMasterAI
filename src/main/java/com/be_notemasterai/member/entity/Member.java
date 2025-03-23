@@ -55,6 +55,10 @@ public class Member {
   @Column(name = "created_at")
   private LocalDateTime createdAt;
 
+  @Column(name = "deleted_at")
+  @Setter
+  private LocalDateTime deletedAt;
+
   public static Member of(OAuth2UserInfo oAuth2UserInfo, String tag) {
 
     return Member.builder()
