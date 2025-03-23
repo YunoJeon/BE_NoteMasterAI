@@ -1,5 +1,6 @@
 package com.be_notemasterai.security.jwt;
 
+import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +15,7 @@ public class JwtTokenService {
 
   private final StringRedisTemplate redisTemplate;
 
-  private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7;
+  private static final long REFRESH_TOKEN_EXPIRATION = DAYS.toSeconds(7);
 
   public void setRefreshTokenFromRedis(String providerUuid, String refreshToken) {
 

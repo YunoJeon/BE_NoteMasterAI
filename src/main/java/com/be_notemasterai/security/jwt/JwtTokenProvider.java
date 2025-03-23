@@ -2,6 +2,8 @@ package com.be_notemasterai.security.jwt;
 
 import static com.be_notemasterai.exception.ErrorCode.INVALID_TOKEN;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
+import static java.util.concurrent.TimeUnit.DAYS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 import com.be_notemasterai.exception.CustomException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,8 +23,8 @@ public class JwtTokenProvider {
 
   private final Key key;
 
-  private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 5;
-  private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7;
+  private static final long ACCESS_TOKEN_EXPIRATION = MINUTES.toSeconds(5);
+  private static final long REFRESH_TOKEN_EXPIRATION = DAYS.toSeconds(7);
 
   public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
     this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
@@ -38,7 +40,7 @@ public class JwtTokenProvider {
 
   private String createToken(String providerUuid, long expiration) {
     Date now = new Date();
-    Date expiryDate = new Date(now.getTime() + expiration);
+    Date expiryDate = new Date(now.getTime() + (expiration * 1000));
 
     return Jwts.builder()
         .setSubject(providerUuid)

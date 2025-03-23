@@ -24,9 +24,11 @@ public enum ErrorCode {
   INVALID_GROUP_MEMBER(BAD_REQUEST, "그룹에 속한 회원이 아닙니다."),
   SELF_TAG_SEARCH_NOT_ALLOWED(BAD_REQUEST, "자기 자신은 태그로 조회할 수 없습니다."),
   SELF_INVITE_NOT_ALLOWED(BAD_REQUEST, "자기 자신은 그룹에 초대할 수 없습니다."),
-  EXIST_GROUP_MEMBER(BAD_REQUEST, "그룹에 회원이 존재하는 경우 삭제할 수 없습니다"),
+  EXISTS_GROUP_MEMBER(BAD_REQUEST, "그룹에 회원이 존재하는 경우 삭제할 수 없습니다"),
   CANNOT_LEAVE_GROUP_AS_OWNER(BAD_REQUEST, "그룹장은 그룹을 떠날 수 없습니다."),
   CANNOT_REMOVE_GROUP_OWNER(BAD_REQUEST, "그룹장은 그룹에서 제거할 수 없습니다."),
+  ALREADY_WITHDRAWN_MEMBER(BAD_REQUEST, "탈퇴한 회원입니다."),
+  INVALID_TAG(BAD_REQUEST, "태그 값이 맞지 않거나, 시간이 초과되었습니다."),
   // 401 UNAUTHORIZED
   INVALID_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다."),
   INVALID_REFRESH_TOKEN(UNAUTHORIZED, "리프레쉬 토큰이 유효하지 않습니다."),

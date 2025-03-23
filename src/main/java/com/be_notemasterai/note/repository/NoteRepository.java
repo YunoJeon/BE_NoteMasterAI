@@ -17,4 +17,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
   List<Note> findByGroup(Group group);
 
   List<Note> findByOwnerAndGroup(Member member, Group group);
+
+  Long countByOwner(Member member);
 }
